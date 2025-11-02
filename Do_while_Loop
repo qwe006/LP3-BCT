@@ -1,0 +1,27 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract PassingMarksDoWhile {
+    uint[10] public marks; // fixed array of size 10
+    uint public count = 0; // counter for accepted marks
+
+    // Function to accept marks using do-while logic
+    function addMarks(uint[] memory inputMarks) public {
+        uint i = 0;
+
+        do {
+            if (count >= 10) {
+                break; // stop if array is full
+            }
+
+            if (inputMarks[i] > 40) {
+                marks[count] = inputMarks[i];
+                count++;
+            }
+            i++;
+        } while (i < inputMarks.length);
+    }
+    function getMarks() public view returns (uint[10] memory) {
+        return marks;
+    }
+}
