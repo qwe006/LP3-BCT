@@ -1,0 +1,66 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract StudentDatabase {
+    // Define a structure for Student
+    struct Student {
+        uint id;
+        string name;
+        uint age;
+        string department;
+        string email;
+    }
+
+    // Mapping from student ID to Student struct
+    mapping(uint => Student) private students;
+
+    // Keep track of total students
+    uint public studentCount;
+
+    // Event to log Ether received
+    event Received(address sender, uint amount);
+
+    // Function to add a new student
+    function addStudent(
+        string memory _name,
+        uint _age,
+        string memory _department,
+        string memory _email
+    ) public {
+        studentCount++;
+        students[studentCount] = Student(studentCount, _name, _age, _department, _email);
+    }
+
+    // Function to get student details by ID
+    function getStudent(uint _id)
+        public
+        view
+        returns (uint, string memory, uint, string memory, string memory)
+    {
+        require(_id > 0 && _id <= studentCount, "Student not found");
+        Student memory s = students[_id];
+        return (s.id, s.name, s.age, s.department, s.email);
+    }
+
+    // Function to update student information
+    function updateStudent(
+        uint _id,
+        string memory _name,
+        uint _age,
+        string memory _department,
+        string memory _email
+    ) public {
+        require(_id > 0 && _id <= studentCount, "Student not found");
+        students[_id] = Student(_id, _name, _age, _department, _email);
+    }
+
+    // Fallback function (when data doesn't match any function)
+    fallback() external payable {
+        emit Received(msg.sender, msg.value);
+    }
+
+    // Receive function (when Ether is sent directly)
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
+    }
+}
