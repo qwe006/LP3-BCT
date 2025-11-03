@@ -1,0 +1,72 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/*
+    Title: Employee Management using Structure
+    Description:
+        This smart contract allows adding multiple employees,
+        searching employee details by ID, and viewing all employee records.
+*/
+
+contract EmployeeManagement {
+    
+    // Structure to store employee information
+    struct Employee {
+        uint256 empId;
+        string name;
+        uint256 salary;
+        string joiningDate;
+    }
+
+    // Mapping to store employees by ID
+    mapping(uint256 => Employee) private employees;
+
+    // Dynamic array to keep list of all employee IDs
+    uint256[] private employeeIds;
+
+    // Event for logging employee creation
+    event EmployeeAdded(uint256 empId, string name);
+
+    // Function to add new employee
+    function addEmployee(
+        uint256 _empId,
+        string memory _name,
+        uint256 _salary,
+        string memory _joiningDate
+    ) public {
+        // Ensure that employee ID does not already exist
+        require(employees[_empId].empId == 0, "Employee ID already exists");
+
+        // Create new employee struct
+        employees[_empId] = Employee(_empId, _name, _salary, _joiningDate);
+
+        // Add ID to employee list
+        employeeIds.push(_empId);
+
+        emit EmployeeAdded(_empId, _name);
+    }
+
+    // Function to get employee details by ID
+    function getEmployeeById(uint256 _empId)
+        public
+        view
+        returns (uint256, string memory, uint256, string memory)
+    {
+        require(employees[_empId].empId != 0, "Employee not found");
+        Employee memory emp = employees[_empId];
+        return (emp.empId, emp.name, emp.salary, emp.joiningDate);
+    }
+
+    // Function to get list of all employees
+    function getAllEmployees()
+        public
+        view
+        returns (Employee[] memory)
+    {
+        Employee[] memory allEmps = new Employee[](employeeIds.length);
+        for (uint256 i = 0; i < employeeIds.length; i++) {
+            allEmps[i] = employees[employeeIds[i]];
+        }
+        return allEmps;
+    }
+}
